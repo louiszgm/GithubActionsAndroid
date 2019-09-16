@@ -1,4 +1,4 @@
-name: Android CI
+name: Android CI/CD
 
 on: [push]
 
@@ -9,8 +9,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
+      with: 
+	java-version: 1.8
     - name: Build with Gradle
-      run: docker run --rm -v "$PWD":/project mingc/android-build-box:1.11.1 bash -c 'cd /project; ./gradlew assembleDebug --no-daemon'
+      run: ./gradlew assemble --no-daemon
     - name: Depoly To Pgyer
       run: |
         curl -F "file=@${PWD}/app/build/outputs/apk/debug/app-debug.apk" \
