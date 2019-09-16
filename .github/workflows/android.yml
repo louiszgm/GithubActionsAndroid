@@ -1,0 +1,19 @@
+name: Android CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build with Gradle
+      run: docker run --rm -v "$PWD":/project mingc/android-build-box:1.11.1 bash -c 'cd /project; ./gradlew assembleDebug --no-daemon'
+    - name: Depoly To Pgyer
+      run: |
+        curl -F "file=@${PWD}/app/build/outputs/apk/debug/app-debug.apk" \
+        -F "uKey=${{secrets.PGYER_USER_KEY}}" \
+        -F "_api_key=${{secrets.PGYER_API_KEY}}" \
+        https://www.pgyer.com/apiv1/app/upload
